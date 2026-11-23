@@ -1,0 +1,5 @@
+__pycache__/
+padaria.db
+.env
+*.pyc
+.venv/

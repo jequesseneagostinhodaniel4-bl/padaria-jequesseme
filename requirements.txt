@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-dotenv
+python-jose
+pwdlib[argon2]
+sqlalchemy
+psycopg2-binary
+fpdf2
+openpyxl
+httpx

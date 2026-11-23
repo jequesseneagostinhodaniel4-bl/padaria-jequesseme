@@ -1,0 +1,10 @@
+{
+  "info": {"name": "Padaria Jequessene", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},
+  "item": [
+    {"name": "Login", "request": {"method": "POST", "url": "{{base}}/api/login", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\"telefone\":\"840000000\",\"password\":\"Jequessene12345\"}"}}},
+    {"name": "Me", "request": {"method": "GET", "url": "{{base}}/api/me", "header": [{"key": "Authorization", "value": "Bearer {{token}}"}]}},
+    {"name": "Produtos", "request": {"method": "GET", "url": "{{base}}/api/products", "header": [{"key": "Authorization", "value": "Bearer {{token}}"}]}},
+    {"name": "Vender", "request": {"method": "POST", "url": "{{base}}/api/vendas", "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{token}}"}], "body": {"mode": "raw", "raw": "{\"produto_id\":1,\"qtd\":1,\"cliente\":\"Maria\",\"pagamento\":\"M-Pesa\"}"}}},
+    {"name": "Dashboard", "request": {"method": "GET", "url": "{{base}}/api/dashboard", "header": [{"key": "Authorization", "value": "Bearer {{token}}"}]}}
+  ]
+}

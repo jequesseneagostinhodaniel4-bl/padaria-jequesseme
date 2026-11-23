@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Padaria Jequessene | Gestão Comercial</title>
+<link rel="stylesheet" href="/static/style.css">
+<style>
+  /* FUNDO SÓ NO LOGIN - NUNCA DENTRO DO SISTEMA */
+  .login-bg{
+    background-image:url('/static/fundo.jpg'), url('https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200') !important;
+    background-size:cover; background-position:center;
+  }
+  #app{ background:#faf8f5 !important; background-image:none !important; }
+  .logo-fallback{
+    width:72px;height:72px;border-radius:50%;background:#b88a2e;
+    display:flex;align-items:center;justify-content:center;
+    font-size:32px;margin:0 auto;color:#fff;font-family:Georgia,serif;
+  }
+</style>
+</head>
+<body>
+<div class="login-bg" id="loginBg">
+  <div class="login-overlay"></div>
+  <div class="login-card">
+    <img src="/static/logo.png" class="login-logo" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='flex'">
+    <div id="logoFallback" class="logo-fallback" style="display:none">J</div>
+    <h1>PADARIA JEQUESSENE</h1>
+    <p class="sub">Gestão Comercial • Matola - Moçambique</p>
+    <p class="sub2" id="dataHoje"></p>
+    <div class="login-badge">M-Pesa • e-Mola • WhatsApp • Recibos PDF</div>
+    <div id="authSec">
+      <h2>Entrar no Sistema</h2>
+      <input id="loginTel" placeholder="Teu telefone - ex: 840000000" inputmode="numeric">
+      <div class="pass-wrap"><input id="loginSenha" type="password" placeholder="Tua senha"><button type="button" class="eye" onclick="mostrarSenha('loginSenha', this)">Ver</button></div>
+      <button class="btn-dark" onclick="login()">Entrar</button>
+      <p id="authMsg"></p>
+      <details><summary>Criar Conta Nova</summary>
+        <input id="rNome" placeholder="Nome completo">
+        <input id="rTel" placeholder="Telefone - ex: 841234567" inputmode="numeric">
+        <input id="rIdade" type="number" placeholder="Idade - ex: 18">
+        <input id="rEmail" type="email" placeholder="Email">
+        <label class="label">Foto</label>
+        <input type="file" accept="image/*" onchange="lerFoto(event,'fotoPrev')">
+        <img id="fotoPrev" class="foto-prev">
+        <select id="rPais"><option>Moçambique</option><option>Angola</option><option>Brasil</option><option>Portugal</option><option>Outro</option></select>
+        <input id="rBairro" placeholder="Bairro - ex: Matola">
+        <select id="rTipo"><option>Cliente</option><option>Funcionário</option></select>
+        <div class="pass-wrap"><input id="rSenha" type="password" placeholder="Cria senha"><button type="button" class="eye" onclick="mostrarSenha('rSenha', this)">Ver</button></div>
+        <button class="btn-p" onclick="registar()">Criar Conta</button>
+      </details>
+      
+    </div>
+  </div>
+</div>
+<div id="app" class="hidden">
+  <header class="topbar"><div class="brand"><img src="/static/logo.png" class="brand-logo-img" onerror="this.style.display='none'"><div><h1>Padaria Jequessene</h1><p>Gestão Comercial | Matola • <span id="dataTop"></span></p></div></div><span id="status" class="status">Online</span></header>
+  <main class="wrap">
+    <div class="hero"><div><h2 id="saudacao">Olá</h2><p id="infoUser" class="muted"></p><p id="avisoPerm" class="warn"></p></div><div class="hero-right"><img id="meuAvatar" class="avatar-lg" src=""><br><button class="btn-r" onclick="sair()">Sair</button></div></div>
+    <div class="flex"><button class="btn-dark" id="btnVoltarAdmin" onclick="voltarAdmin()" style="display:none">Voltar para Admin</button><button class="btn-y" onclick="abrirTroca()">Trocar de Conta (Admin)</button><button onclick="window.open('/api/recibo/diario','_blank')">Fecho do Dia</button></div>
+    <div class="kpis"><div class="kpi kpi-green"><span>Vendas Totais</span><b id="tVendas">0 MT</b><small>Semana atual</small></div><div class="kpi kpi-dark"><span>Lucro Líquido</span><b id="tLucro">0 MT</b><small>Já com compras e despesas</small></div><div class="kpi"><span>Clientes</span><b id="tClientes">0</b><small>Registados</small></div><div class="kpi kpi-red"><span>Dívidas</span><b id="tDividas">0 MT</b><small>Por receber</small></div></div>
+    <div class="tabs"><button onclick="mostrar('dashSec')">Dashboard</button><button onclick="mostrar('pessoasSec')">Pessoas</button><button onclick="mostrar('produtosSec')">Produtos</button><button onclick="mostrar('vendasSec')">Vender</button><button onclick="mostrar('stockSec')">Stock</button><button onclick="mostrar('fornecedorSec')">Fornecedor</button><button onclick="mostrar('encomendasSec')">Encomendas</button><button onclick="mostrar('dividasSec')">Dívidas</button><button onclick="mostrar('adminSec')">Admin</button></div>
+    <div id="dashSec" class="card"><h2>Dashboard - Últimos 7 dias</h2><div class="chart-bar" id="grafico"></div><div class="chart-labels" id="graficoLabels"></div><h2 class="mt">Produtos Mais Vendidos</h2><div id="maisVendidosGrid" class="prod-grid"></div><div class="flex mt"><button class="btn-dark" onclick="window.open('/api/recibo/diario','_blank')">Recibo Diário PDF</button><button onclick="window.open('/api/export/excel','_blank')">Exportar Excel</button><button class="btn-y" onclick="window.open('/api/export/csv','_blank')">Exportar CSV</button></div><div class="flex"><div class="card flex1"><h3>Mais Vendidos</h3><div id="maisVendidos"></div></div><div class="card flex1"><h3>Por Pagamento</h3><div id="porPag"></div></div></div><div class="kpis" id="dashHoje"></div></div>
+    <div id="pessoasSec" class="card hidden"><h2>1. Gestão de Pessoas</h2><p class="muted">Nome, telefone, idade, email, foto, país / bairro.</p><div id="listaPessoas"></div></div>
+    <div id="produtosSec" class="card hidden"><h2>2. Gestão de Produtos</h2><p class="muted">Lógica: <b>Lucro = Preço - Custo</b>. Quando vendes, o stock baixa sozinho.</p><input id="pesquisaProd" placeholder="Pesquisar produto..." oninput="carregarDados()"><div id="gridProd" class="prod-grid"></div><h3>Adicionar / Editar Produto</h3><input id="pNome" placeholder="Nome - ex: Bolo de Chocolate"><select id="pCat"><option>Pães</option><option>Bolos</option><option>Pastéis</option><option>Doces</option><option>Salgados</option><option>Bebidas</option></select><input id="pPreco" type="number" placeholder="Preço de Venda MT"><input id="pCusto" type="number" placeholder="Custo MT - ex: 400"><input id="pStock" type="number" placeholder="Stock inicial"><label class="label">Foto do produto</label><input type="file" accept="image/*" onchange="lerFoto(event)"><button class="btn-g" id="btnSalvarProd" onclick="salvarProd()">Adicionar Produto</button><div id="listaProd"></div></div>
+    <div id="vendasSec" class="card hidden"><h2>3. Financeiro - Vender</h2><select id="vProd"></select><input id="vQtd" type="number" value="1"><input id="vCliente" placeholder="Cliente - ex: Maria"><input id="vTel" placeholder="Telefone do cliente"><select id="vPag"><option>M-Pesa</option><option>e-Mola</option><option>Dinheiro</option><option>Transferência</option><option>Cartão</option><option>Fiado / Dívida</option></select><label class="label">Quando vai pagar? (se for dívida)</label><input id="vDataPag" type="date"><button class="btn-g" onclick="addVenda()">Vender e Gerar Recibo PDF</button><h3>Saída / Despesa</h3><input id="sDesc" placeholder="Ex: Pagar luz"><input id="sValor" type="number" placeholder="Valor MT"><select id="sCat"><option>Geral</option><option>Luz</option><option>Água</option><option>Aluguer</option><option>Salário</option><option>Material</option></select><button class="btn-o" onclick="addDespesa()">Registar Saída</button><h3>Histórico de Vendas</h3><div id="listaVendas"></div><h3>Despesas</h3><div id="listaDespesas"></div></div>
+    <div id="stockSec" class="card hidden"><h2>4. Gestão de Stock</h2><p id="alertaStock" class="danger"></p><div id="listaStock"></div></div>
+    <div id="fornecedorSec" class="card hidden"><h2>Fornecedores + Compras</h2><input id="fNome" placeholder="Nome fornecedor"><input id="fTel" placeholder="Telefone"><input id="fProd" placeholder="O que vende - ex: Farinha 50kg"><input id="fPreco" type="number" placeholder="Preço MT"><input id="fLocal" placeholder="Local - ex: Matola"><button class="btn-y" onclick="addForn()">Adicionar Fornecedor</button><div id="listaForn"></div><h3>Registar Compra</h3><select id="cForn"></select><input id="cProd" placeholder="Produto - ex: Farinha"><input id="cQtd" type="number" value="1"><input id="cPreco" type="number" placeholder="Preço por unidade MT"><select id="cPag"><option>Dinheiro</option><option>M-Pesa</option><option>e-Mola</option><option>Transferência</option><option>Fiado</option></select><button class="btn-g" onclick="addCompra()">Registar Compra + Recibo</button><h3>Histórico de Compras</h3><div id="listaCompras"></div></div>
+    <div id="encomendasSec" class="card hidden"><h2>Encomendas</h2><input id="eCliente" placeholder="Cliente"><input id="eTel" placeholder="Telefone"><select id="eTipo"><option>Bolo de Aniversário</option><option>Bolo de Casamento</option><option>Bolo de Chocolate</option><option>Pastéis (Caixa 12)</option><option>Doces Festa</option></select><input id="eData" type="date"><input id="ePreco" type="number" placeholder="Preço MT"><select id="eSinal"><option>Sem Sinal</option><option>Sinal 50%</option><option>Pago Total</option></select><input id="eObs" placeholder="Detalhes: rosa, 2 andares, nome Maria..."><button class="btn-y" onclick="addEnc()">Registar Encomenda</button><div id="listaEnc"></div></div>
+    <div id="dividasSec" class="card hidden"><h2>Dívidas - Quem deve, quanto deve, quando paga</h2><div id="listaDividas"></div></div>
+    <div id="adminSec" class="card hidden"><h2>Painel do Administrador - Só Jequessene</h2><p class="muted">Recibos de tudo, história de compra e venda, e quem editou o quê.</p><div class="flex"><button class="btn-p" onclick="carregarPainelAdmin()">Atualizar Painel</button><button class="btn-y" onclick="abrirTroca()">Trocar de Conta</button><button onclick="backup()">Backup</button></div><div id="adminResumo"></div><div id="adminVendas"></div><div id="adminCompras"></div><div id="adminFluxo"></div></div>
+  </main>
+  <footer class="footer">Padaria Jequessene • Matola, Moçambique • Sistema de Gestão Comercial • © 2026</footer>
+</div>
+<div id="modalTroca" class="modal hidden"><div class="box"><h2>Trocar de Conta - Admin</h2><div id="listaTroca"></div><input id="trocaTel" placeholder="Telefone da conta"><input id="trocaSenha" type="password" placeholder="Tua senha de Admin"><div class="flex"><button onclick="trocarConta()">Entrar nessa conta</button><button onclick="fecharTroca()" style="background:#888">Cancelar</button></div></div></div>
+<nav id="barra" class="hidden"><button onclick="mostrar('vendasSec')">Vender</button><button onclick="mostrar('produtosSec')">Produtos</button><button onclick="mostrar('fornecedorSec')">Fornecedor</button><button onclick="mostrar('encomendasSec')">Encomendas</button><button onclick="mostrar('adminSec')">Admin</button></nav>
+<script src="/static/app.js"></script>
+<script>
+document.getElementById('dataHoje').innerText = new Date().toLocaleDateString('pt-PT',{day:'2-digit',month:'long',year:'numeric'});
+document.getElementById('dataTop').innerText = new Date().toLocaleDateString('pt-PT',{day:'2-digit',month:'short',year:'numeric'});
+function mostrarSenha(id, btn){ var el=document.getElementById(id); if(el.type==='password'){el.type='text';btn.innerText='Esconder';} else {el.type='password';btn.innerText='Ver';} }
+</script>
+</body>
+</html>
